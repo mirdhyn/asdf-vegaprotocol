@@ -4,19 +4,21 @@
 
 ## Install
 
-Plugin:
-
+```
 asdf plugin add vega https://github.com/mirdhyn/asdf-vegaprotocol.git
 ```
 
-vegaprotocol:
+## Usage
 
-```shell
+```
 # Show all installable versions
 asdf list-all vega
 
 # Install specific version
 asdf install vega latest
+
+# List installed versions
+asdf list vega
 
 # Set a version globally (on your ~/.tool-versions file)
 asdf global vega latest
