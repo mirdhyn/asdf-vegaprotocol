@@ -21,7 +21,7 @@ fi
 
 sort_versions() {
   sed 'h; s/[+-]/./g; s/.p\([[:digit:]]\)/.z\1/; s/$/.z/; G; s/\n/ /' |
-    LC_ALL=C sort -t. -k 1,1 -k 2,2n -k 3,3n -k 4,4n -k 5,5n | awk '{print $2}'
+    LC_ALL=C sort -t. -k 1,1 -k 2,2n -k 3,3n -k 4,4n -k 5,5n | awk '{print $2}' | tail -30
 }
 
 list_github_tags() {
@@ -42,7 +42,7 @@ download_release() {
   arch="$(get_arch)"
 
   url="$GH_REPO/releases/download/v${version}/${TOOL_NAME}-${platform}-${arch}"
-  
+
   if [ $(check_version ${version}) -gt $(check_version "0.53.0") ]; then
     url="${url}.zip"
   fi
