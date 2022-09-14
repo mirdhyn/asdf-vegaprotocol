@@ -5,7 +5,7 @@ set -euo pipefail
 # TODO: Ensure this is the correct GitHub homepage where releases can be downloaded for vegaprotocol.
 GH_REPO="https://github.com/vegaprotocol/vega"
 TOOL_NAME="vega"
-TOOL_TEST="vega --version"
+TOOL_TEST="vega version"
 
 fail() {
   echo -e "asdf-$TOOL_NAME: $*"
@@ -35,13 +35,44 @@ list_all_versions() {
 }
 
 download_release() {
-  local version filename url
+  local version filename url platform arch
   version="$1"
   filename="$2"
-  url="$GH_REPO/releases/download/v${version}/${TOOL_NAME}-linux-amd64.zip"
+  platform="$(get_platform)"
+  arch="$(get_arch)"
 
+  url="$GH_REPO/releases/download/v${version}/${TOOL_NAME}-${platform}-${arch}"
+  
+  if [ $(check_version ${version}) -gt $(check_version "0.53.0") ]; then
+    url="${url}.zip"
+  fi
+  
   echo "* Downloading $TOOL_NAME release $version..."
   curl "${curl_opts[@]}" -o "$filename" -C - "$url" || fail "Could not download $url"
+}
+
+get_platform() {
+  uname | tr '[:upper:]' '[:lower:]'
+}
+
+get_arch() {
+  local arch; arch=$(uname -m | tr '[:upper:]' '[:lower:]')
+  case ${arch} in
+  arm64) # m1 macs
+    arch='arm64';;
+  aarch64) # all other arm64 devices
+    arch='arm64';;
+  x86_64)
+    arch='amd64';;
+  *) # fallback
+    arch='amd64';;
+  esac
+
+  echo "${arch}"
+}
+
+check_version() {
+  echo "$@" | awk -F. '{ printf("%d%03d%03d%03d\n", $1,$2,$3,$4); }'
 }
 
 install_version() {
